@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\sharp\workspace\Android\Chatroom\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="C:\Users\sharp\workspace\Android\Chatroom\app\build\intermediates\pre-dexed\debug\classes-6239a0833e1a4a595648aaa4aebb92602221094a.jar" />
+    </item>
+    <item
+        jar="C:\Users\sharp\workspace\Android\Chatroom\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="C:\Users\sharp\workspace\Android\Chatroom\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-6c27a1a6bd224aaeaeb47871483c72c72aec6f76.jar" />
+    </item>
+    <item
+        jar="D:\Android\android-sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="C:\Users\sharp\workspace\Android\Chatroom\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-ef779f627fc23de1750a2489683ef31886f5c905.jar" />
+    </item>
+    <item
+        jar="C:\Users\sharp\workspace\Android\Chatroom\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="C:\Users\sharp\workspace\Android\Chatroom\app\build\intermediates\pre-dexed\debug\classes-da40556801101e4907b6b8a55653fc4a2b98c25e.jar" />
+    </item>
+
+</items>
