@@ -1,5 +1,6 @@
 package com.example.zfliu.chatroom;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -30,14 +31,21 @@ public class ChatActivity extends ActionBarActivity {
 
     private CustomAdapter adapter;
 
+    private String toWho;
+
+    private String who;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+
         beans = new LinkedList<Bean>();
         String[] msg = new String[] { "你好！", "你也在金象工作吗？", "我在天安门扫大街呢，这里可舒服了！",
                 "原来你也细化这个工作啊，我这里还招人呢，你来不？来的话，我一句话的事儿！", "呵呵，你好！", "是的，你在哪里呢？",
                 "吼吼，这么便宜的事儿？！，我怎么没有遇到呢。", "恩，好啊 好啊。那等着我。。。" };
-
         // 0 是I； 1 是you
         for (int j = 0; j < msg.length; j++) {
             beans.add(new Bean(msg[j],R.drawable.me,"", 3));
@@ -58,7 +66,6 @@ public class ChatActivity extends ActionBarActivity {
                 new View.OnCreateContextMenuListener() {
                     @Override
                     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
                         menu.setHeaderTitle("提示：");
                         menu.setHeaderIcon(android.R.drawable.stat_notify_error);
                         menu.add(0,0,1,"删除");

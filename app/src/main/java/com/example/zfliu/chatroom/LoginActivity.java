@@ -79,6 +79,7 @@ public class LoginActivity extends ActionBarActivity {
                     //测试用
                     Toast.makeText(LoginActivity.this,"登陆成功",Toast.LENGTH_SHORT).show();
                     intent = new Intent(LoginActivity.this,FriendListActivity.class);
+                    intent.putExtra("WHO",username);
                     startActivity(intent);
                     LoginActivity.this.finish();
                     //
@@ -98,11 +99,11 @@ public class LoginActivity extends ActionBarActivity {
     class ShowRespHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            //System.out.println("Handler-->"+Thread.currentThread().getName());
             String s = (String)msg.obj;
             if (s.equals("success")){
                 Toast.makeText(LoginActivity.this,"登陆成功",Toast.LENGTH_SHORT).show();
                 intent = new Intent(LoginActivity.this,FriendListActivity.class);
+                intent.putExtra("WHO",username);
                 startActivity(intent);
                 LoginActivity.this.finish();
             } else {
@@ -118,7 +119,7 @@ public class LoginActivity extends ActionBarActivity {
             String url = getString(R.string.server_home_url).toString()+"/login";
             try{
                 HttpPost httpPost = new HttpPost(url);
-                //System.out.println("NetWork-->"+Thread.currentThread().getName());
+
                 List params = new ArrayList();
                 params.add(new BasicNameValuePair("username",username));
                 params.add(new BasicNameValuePair("password",password));
@@ -136,6 +137,7 @@ public class LoginActivity extends ActionBarActivity {
                     msg.obj="网络错误";
                     handler.sendMessage(msg);
                 }
+
             }catch (UnsupportedEncodingException e){
                 e.printStackTrace();
             } catch (ClientProtocolException e) {
