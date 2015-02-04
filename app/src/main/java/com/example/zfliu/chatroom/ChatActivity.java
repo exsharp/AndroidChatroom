@@ -1,5 +1,9 @@
 package com.example.zfliu.chatroom;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -17,11 +21,11 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import com.example.zfliu.chatroom.chat.*;
+import com.example.zfliu.chatroom.service.SocketNet;
 
 public class ChatActivity extends ActionBarActivity {
 
     private LinkedList<Bean> beans = null;
-
     /** 聊天message 格式 */
     private ListView listView;
     /** 信息编辑框 */
@@ -31,9 +35,22 @@ public class ChatActivity extends ActionBarActivity {
 
     private CustomAdapter adapter;
 
-    private String toWho;
+    private Intent intent;
 
-    private String who;
+    private SocketNet.MyBinder myBinder;
+
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            myBinder = (SocketNet.MyBinder) service;
+            myBinder.startDownload();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +58,9 @@ public class ChatActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        intent = new Intent(this, SocketNet.class);
+        startService(intent);
+        //bindService(intent,connection,BIND_AUTO_CREATE)
 
         beans = new LinkedList<Bean>();
         String[] msg = new String[] { "你好！", "你也在金象工作吗？", "我在天安门扫大街呢，这里可舒服了！",
@@ -73,7 +93,6 @@ public class ChatActivity extends ActionBarActivity {
                     }
                 }
         );
-
     }
 
     //处理发送消息的方法
