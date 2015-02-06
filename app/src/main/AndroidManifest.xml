@@ -33,6 +33,8 @@
             android:name=".ChatActivity"
             android:label="@string/title_activity_chat" >
         </activity>
+        <service android:name=".service.SocketNet">
+        </service>
     </application>
 
 </manifest>

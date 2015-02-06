@@ -34,14 +34,12 @@ public class Apple {
     }
 
     public Apple(String name, Integer portrait,Integer state,int id) {
-        //super();
         this.name = name;
         this.portrait = portrait;
         this.id = id;
     }
 
     public Apple(String name,int id) {
-        //super();
         this.name = name;
         this.id = id;
     }

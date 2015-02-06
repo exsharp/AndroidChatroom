@@ -1,7 +1,10 @@
 package com.example.zfliu.chatroom;
 
-import android.content.DialogInterface;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,6 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.example.zfliu.chatroom.service.SocketNet;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -42,7 +47,14 @@ public class LoginActivity extends ActionBarActivity {
     private String password;
     private Handler handler;
     private TextView textView;
-    private Intent intent;
+    private Intent mIntent;
+    private LoginReceive loginReceive;
+    private ProgressDialog progressDialog = null;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(loginReceive);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +63,19 @@ public class LoginActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
+        Intent loginIntent = new Intent(LoginActivity.this,SocketNet.class);
+        startService(loginIntent);
+
+        loginReceive = new LoginReceive();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("VERIFY");
+        registerReceiver(loginReceive,filter);
+
         loginButton = (Button)findViewById(R.id.loginBT);
         registerButton = (Button)findViewById(R.id.registerBT);
 
-        handler = new ShowRespHandler();
-
         loginButton.setOnClickListener(new ButtonListener());
         registerButton.setOnClickListener(new ButtonListener());
-
     }
     class ButtonListener implements View.OnClickListener {
         @Override
@@ -66,24 +83,12 @@ public class LoginActivity extends ActionBarActivity {
             textView = (TextView)findViewById(R.id.showTV);
             switch (v.getId()){
                 case R.id.loginBT:
-
                     EditText usernameET = (EditText)findViewById(R.id.usernameET);
                     EditText passwordET = (EditText)findViewById(R.id.passwordET);
                     username = usernameET.getText().toString();
                     password = passwordET.getText().toString();
-
-                    //正式用
-                    //LoginNetWorkThread login= new LoginNetWorkThread();
-                    //login.start();
-
-                    //测试用
-                    Toast.makeText(LoginActivity.this,"登陆成功",Toast.LENGTH_SHORT).show();
-                    intent = new Intent(LoginActivity.this,FriendListActivity.class);
-                    intent.putExtra("WHO",username);
-                    startActivity(intent);
-                    LoginActivity.this.finish();
-                    //
-
+                    progressDialog = ProgressDialog.show(LoginActivity.this, "登陆中", "正在登陆,请稍候！");
+                    this.login();
                     break;
                 case R.id.registerBT:
                     Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
@@ -94,56 +99,37 @@ public class LoginActivity extends ActionBarActivity {
                     break;
             }
         }
-    }
-
-    class ShowRespHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            String s = (String)msg.obj;
-            if (s.equals("success")){
-                Toast.makeText(LoginActivity.this,"登陆成功",Toast.LENGTH_SHORT).show();
-                intent = new Intent(LoginActivity.this,FriendListActivity.class);
-                intent.putExtra("WHO",username);
-                startActivity(intent);
-                LoginActivity.this.finish();
-            } else {
-                Toast.makeText(LoginActivity.this,"用户名或密码错误",Toast.LENGTH_LONG).show();
-            }
+        private void login(){
+            Intent loginIntent = new Intent();
+            loginIntent.setAction("LOGIN");
+            loginIntent.putExtra("username",username);
+            loginIntent.putExtra("password",password);
+            sendBroadcast(loginIntent);
         }
     }
 
-    class LoginNetWorkThread extends Thread {
+    private class LoginReceive extends BroadcastReceiver{
+
         @Override
-        public void run() {
-            HttpClient httpClient = new DefaultHttpClient();
-            String url = getString(R.string.server_home_url).toString()+"/login";
-            try{
-                HttpPost httpPost = new HttpPost(url);
-
-                List params = new ArrayList();
-                params.add(new BasicNameValuePair("username",username));
-                params.add(new BasicNameValuePair("password",password));
-
-                httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-                HttpResponse httpResponse = httpClient.execute(httpPost);
-
-                if (200==httpResponse.getStatusLine().getStatusCode()){
-                    String content = EntityUtils.toString(httpResponse.getEntity(),"utf-8");
-                    Message msg = handler.obtainMessage();
-                    msg.obj=content;
-                    handler.sendMessage(msg);
-                }else {
-                    Message msg = handler.obtainMessage();
-                    msg.obj="网络错误";
-                    handler.sendMessage(msg);
+        public void onReceive(Context context, Intent intent) {
+            String getResult;
+            String why;
+            getResult = intent.getStringExtra("RESULT");
+            progressDialog.dismiss();
+            if (getResult.equals("SUCCESS")){
+                mIntent = new Intent(LoginActivity.this,FriendListActivity.class);
+                mIntent.putExtra("WHO",username);
+                startActivity(mIntent);
+                LoginActivity.this.finish();
+            }else {
+                why = intent.getStringExtra("WHY");
+                switch (why){
+                    case "NOFOUND":
+                        Toast.makeText(LoginActivity.this,"没有此用户",Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        Toast.makeText(LoginActivity.this,"用户名或密码错误",Toast.LENGTH_SHORT).show();
                 }
-
-            }catch (UnsupportedEncodingException e){
-                e.printStackTrace();
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -166,7 +152,6 @@ public class LoginActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

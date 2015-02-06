@@ -1,5 +1,6 @@
 package com.example.zfliu.chatroom;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -31,16 +32,11 @@ public class ChatActivity extends ActionBarActivity {
 
     private CustomAdapter adapter;
 
-    private String toWho;
-
-    private String who;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
 
         beans = new LinkedList<Bean>();
         String[] msg = new String[] { "你好！", "你也在金象工作吗？", "我在天安门扫大街呢，这里可舒服了！",
@@ -90,6 +86,11 @@ public class ChatActivity extends ActionBarActivity {
                     adapter.addItemNotifiChange(new Bean(txt, R.drawable.me, new Date()+"", 0));
                     edt.setText("");
                     listView.setSelection(beans.size() - 1);
+
+                    Intent sockIntent = new Intent();
+                    sockIntent.setAction("SOCKET");
+                    sockIntent.putExtra("name", "服务器");
+                    sendBroadcast(sockIntent);
                 }
             }
         });
