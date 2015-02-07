@@ -1,6 +1,7 @@
 package com.example.zfliu.chatroom.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
@@ -59,8 +60,9 @@ public class SocketNet extends Service {
                         String temp;
                         while ((temp=reader.readLine())!=null){
                             Log.d("SOCKET",temp);
-                            HandlerMsg handler = new HandlerMsg(temp);
-                            handler.handler();
+//                            HandlerMsg handler = new HandlerMsg(temp);
+//                            handler.handler();
+                            passStr(temp);
                         }
                         System.out.println("一次循环结束");
                     }
@@ -94,6 +96,11 @@ public class SocketNet extends Service {
             e.printStackTrace();
         }
         super.onDestroy();
+    }
+
+    private void passStr(String str) throws JSONException {
+        MsgHandler msgHandler = new MsgHandler(str,this);
+        msgHandler.judgeType();
     }
 
     //这里处理从服务器接收回来的东西
