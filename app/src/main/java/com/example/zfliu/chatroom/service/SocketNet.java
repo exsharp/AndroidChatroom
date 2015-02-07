@@ -80,18 +80,8 @@ public class SocketNet extends Service {
             e.printStackTrace();
         }
         this.loop();
-        //this.iniBroadcastReceiver();
         Log.d("SOCKET","到了这里onCreate函数");
     }
-
-    public void iniBroadcastReceiver(){
-        SocketBroadcastReceiver socketBroadcastReceiver = new SocketBroadcastReceiver(writer);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("LOGIN");
-        filter.addAction("SENDMSG");
-        registerReceiver(socketBroadcastReceiver, filter);
-        Log.d("SOCKET","注册广播接收器");
-    };
 
     @Override
     public void onDestroy() {

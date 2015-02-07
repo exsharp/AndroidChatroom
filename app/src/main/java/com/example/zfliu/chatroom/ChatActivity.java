@@ -153,7 +153,7 @@ public class ChatActivity extends ActionBarActivity {
     private void fillMsgList() {
         LinkedList<Msg> iSay = new LinkedList<>(dbManager.Query(who, toWho));
         LinkedList<Msg> tSay = new LinkedList<>(dbManager.Query(toWho, who));
-        for (int i = 0; !iSay.isEmpty()&&!tSay.isEmpty() ; i++) {
+        while(!iSay.isEmpty()&&!tSay.isEmpty()) {
             if (iSay.getFirst().time.compareTo(tSay.getFirst().time) <= 0) {
                 String msg = iSay.getFirst().msg;
                 String time = iSay.getFirst().time;
@@ -185,17 +185,18 @@ public class ChatActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_chat, menu);
-        return true;
-    }
-
-    @Override
     protected void onDestroy() {
         unregisterReceiver(chatReceiver);
         super.onDestroy();
         dbManager.closeDB();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return true;
     }
 
     @Override
