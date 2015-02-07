@@ -37,8 +37,7 @@ public class Bean {
     public void setTime(String time) {
         this.time = time;
     }
-    public Bean(String tMessage, Integer portrait, String time,
-                int id) {
+    public Bean(String tMessage, Integer portrait, String time,int id) {
         super();
         this.tMessage = tMessage;
         this.portrait = portrait;

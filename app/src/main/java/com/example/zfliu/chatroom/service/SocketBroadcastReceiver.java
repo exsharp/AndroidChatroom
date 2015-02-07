@@ -15,13 +15,14 @@ import java.io.IOException;
 
 /**
  * Created by zfliu on 2/5/2015.
+ * 处理Service接收到的东西
  */
 class SocketBroadcastReceiver extends BroadcastReceiver {
 
-    private BufferedWriter Writer;
+    private BufferedWriter writer;
 
     SocketBroadcastReceiver(BufferedWriter out){
-        Writer=out;
+        writer=out;
     }
 
     @Override
@@ -47,9 +48,24 @@ class SocketBroadcastReceiver extends BroadcastReceiver {
                 }
                 jsonString = jsonObject.toString();
                 break;
+            case "SendMsg":
+                String who = intent.getStringExtra("who");
+                String toWho = intent.getStringExtra("toWho");
+                String msg = intent.getStringExtra("Msg");
+                jsonArray.put(who);
+                jsonArray.put(toWho);
+                jsonArray.put(msg);
+                try {
+                    jsonObject.put(TYPE, "Msg");
+                    jsonObject.put(CONTENT, jsonArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                jsonString = jsonObject.toString();
+                break;
             default:
         }
-        Log.d("SBR", "Socket广播");
+        Log.d("SBR", "Socket收到广播");
         this.sentMsg(jsonString);
     }
 
@@ -58,8 +74,8 @@ class SocketBroadcastReceiver extends BroadcastReceiver {
             @Override
             public void run() {
                 try {
-                    Writer.write(str);
-                    Writer.flush();
+                    writer.write(str);
+                    writer.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

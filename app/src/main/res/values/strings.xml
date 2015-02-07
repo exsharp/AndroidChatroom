@@ -9,5 +9,6 @@
     <string name="server_home_port">3333</string>
     <string name="title_activity_friend_list">FriendListActivity</string>
     <string name="title_activity_chat">ChatActivity</string>
+    <string name="title_activity_fragment">FragmentActivity</string>
 
 </resources>

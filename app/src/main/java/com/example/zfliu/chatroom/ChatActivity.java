@@ -1,8 +1,13 @@
 package com.example.zfliu.chatroom;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,30 +22,38 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import com.example.zfliu.chatroom.chat.*;
+import com.example.zfliu.chatroom.database.DBManager;
+import com.example.zfliu.chatroom.database.Msg;
 
 public class ChatActivity extends ActionBarActivity {
 
-    private LinkedList<Bean> beans = null;
+    private DBManager dbManager;
 
+    private LinkedList<Bean> beans = null;
     /** 聊天message 格式 */
     private ListView listView;
     /** 信息编辑框 */
     private EditText edt;
     /** 信息发送按钮 */
     private Button btnEnter;
-
     private CustomAdapter adapter;
-
     private String toWho;
-
     private String who;
+    private ChatReceiver chatReceiver = new ChatReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+        Intent getIntent = getIntent();
+        who = getIntent.getStringExtra("WHO");
+        toWho = getIntent.getStringExtra("ToWho");
+        //注册接收器
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("MsgBack");
+        registerReceiver(chatReceiver,intentFilter);
+        Log.d("CHAT","chat注册广播接收器");
 
         beans = new LinkedList<Bean>();
         String[] msg = new String[] { "你好！", "你也在金象工作吗？", "我在天安门扫大街呢，这里可舒服了！",
@@ -48,12 +61,13 @@ public class ChatActivity extends ActionBarActivity {
                 "吼吼，这么便宜的事儿？！，我怎么没有遇到呢。", "恩，好啊 好啊。那等着我。。。" };
         // 0 是I； 1 是you
         for (int j = 0; j < msg.length; j++) {
-            beans.add(new Bean(msg[j],R.drawable.me,"", 3));
+            beans.add(new Bean(msg[j],R.drawable.you,"", 1));
         }
-
         setContentView(R.layout.activity_chat);
         initViewsMethod();
         onHandleMethod();
+
+        dbManager = new DBManager(this);
     }
 
     //处理listView的item方法
@@ -87,9 +101,17 @@ public class ChatActivity extends ActionBarActivity {
                 if (txt.equals("")){
                     Toast.makeText(getApplicationContext(), "发送内容不能为空 !", Toast.LENGTH_SHORT).show();
                 }else{
+                    Intent sendMsgIntent = new Intent();
+                    sendMsgIntent.setAction("SendMsg");
+                    sendMsgIntent.putExtra("who", who);
+                    sendMsgIntent.putExtra("toWho",toWho);
+                    sendMsgIntent.putExtra("Msg",txt);
+                    sendBroadcast(sendMsgIntent);
                     adapter.addItemNotifiChange(new Bean(txt, R.drawable.me, new Date()+"", 0));
                     edt.setText("");
                     listView.setSelection(beans.size() - 1);
+
+                    dbManager.addMsg(new Msg(who,toWho,"",txt));
                 }
             }
         });
@@ -109,11 +131,29 @@ public class ChatActivity extends ActionBarActivity {
         return super.onContextItemSelected(item);
     }
 
+    private class ChatReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("CHATRCV","chat广播接收器");
+            intent.getStringExtra("who");
+            String msg = intent.getStringExtra("what");
+            adapter.addItemNotifiChange(new Bean(msg, R.drawable.you, new Date()+"", 1));
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(chatReceiver);
+        super.onDestroy();
+
+        dbManager.closeDB();
     }
 
     @Override

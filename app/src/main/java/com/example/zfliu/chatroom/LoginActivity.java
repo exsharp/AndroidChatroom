@@ -63,8 +63,8 @@ public class LoginActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
-        Intent loginIntent = new Intent(LoginActivity.this,SocketNet.class);
-        startService(loginIntent);
+        Intent serviceIntent = new Intent(LoginActivity.this,SocketNet.class);
+        startService(serviceIntent);
 
         loginReceive = new LoginReceive();
         IntentFilter filter = new IntentFilter();
@@ -80,14 +80,16 @@ public class LoginActivity extends ActionBarActivity {
     class ButtonListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            textView = (TextView)findViewById(R.id.showTV);
+//            textView = (TextView)findViewById(R.id.showTV);
+//            Intent intent = new Intent(LoginActivity.this,FragmentActivity.class);
+//            startActivity(intent);
             switch (v.getId()){
                 case R.id.loginBT:
+                    progressDialog = ProgressDialog.show(LoginActivity.this, "登陆中", "正在登陆,请稍候！");
                     EditText usernameET = (EditText)findViewById(R.id.usernameET);
                     EditText passwordET = (EditText)findViewById(R.id.passwordET);
                     username = usernameET.getText().toString();
                     password = passwordET.getText().toString();
-                    progressDialog = ProgressDialog.show(LoginActivity.this, "登陆中", "正在登陆,请稍候！");
                     this.login();
                     break;
                 case R.id.registerBT:
@@ -105,6 +107,8 @@ public class LoginActivity extends ActionBarActivity {
             loginIntent.putExtra("username",username);
             loginIntent.putExtra("password",password);
             sendBroadcast(loginIntent);
+            AppUtil app = (AppUtil)getApplication();
+            app.setUser(username,password);
         }
     }
 
@@ -117,7 +121,7 @@ public class LoginActivity extends ActionBarActivity {
             getResult = intent.getStringExtra("RESULT");
             progressDialog.dismiss();
             if (getResult.equals("SUCCESS")){
-                mIntent = new Intent(LoginActivity.this,FriendListActivity.class);
+                mIntent = new Intent(LoginActivity.this,FragmentActivity.class);
                 mIntent.putExtra("WHO",username);
                 startActivity(mIntent);
                 LoginActivity.this.finish();
@@ -128,7 +132,7 @@ public class LoginActivity extends ActionBarActivity {
                         Toast.makeText(LoginActivity.this,"没有此用户",Toast.LENGTH_SHORT).show();
                         break;
                     default:
-                        Toast.makeText(LoginActivity.this,"用户名或密码错误",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this,"密码错误",Toast.LENGTH_SHORT).show();
                 }
             }
         }

@@ -13,7 +13,6 @@ public class DateFomats {
     public static String getStringTime(String strTime){
         SimpleDateFormat sd = new SimpleDateFormat("MM-dd"+"\0\0"+"HH:"+"mm");
         long sTime = Long.valueOf(strTime);
-
         return sd.format(new Date(sTime * 1000));
     }
 
