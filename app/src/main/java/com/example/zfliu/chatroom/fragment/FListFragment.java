@@ -1,6 +1,5 @@
 package com.example.zfliu.chatroom.fragment;
 
-import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,9 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 
-import com.example.zfliu.chatroom.AppUtil;
+import com.example.zfliu.chatroom.service.AppUtil;
 import com.example.zfliu.chatroom.ChatActivity;
 import com.example.zfliu.chatroom.R;
 import com.example.zfliu.chatroom.friendlist.Apple;

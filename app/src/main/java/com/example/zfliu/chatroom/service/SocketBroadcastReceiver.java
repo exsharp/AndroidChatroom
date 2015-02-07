@@ -48,12 +48,14 @@ class SocketBroadcastReceiver extends BroadcastReceiver {
                 }
                 jsonString = jsonObject.toString();
                 break;
-            case "SendMsg":
+            case "SENDMSG":
                 String who = intent.getStringExtra("who");
                 String toWho = intent.getStringExtra("toWho");
+                String time = intent.getStringExtra("time");
                 String msg = intent.getStringExtra("Msg");
                 jsonArray.put(who);
                 jsonArray.put(toWho);
+                jsonArray.put(time);
                 jsonArray.put(msg);
                 try {
                     jsonObject.put(TYPE, "Msg");

@@ -18,12 +18,16 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 
 import com.example.zfliu.chatroom.chat.*;
 import com.example.zfliu.chatroom.database.DBManager;
 import com.example.zfliu.chatroom.database.Msg;
+import com.example.zfliu.chatroom.service.AppUtil;
+import com.example.zfliu.chatroom.service.SendMsg;
 
 public class ChatActivity extends ActionBarActivity {
 
@@ -42,32 +46,34 @@ public class ChatActivity extends ActionBarActivity {
     private ChatReceiver chatReceiver = new ChatReceiver();
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        beans = new LinkedList<Bean>();
+        this.fillMsgList();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        //获取数据库管理
+        dbManager = new DBManager(this);
+        //获得正在两天的两个人信息
         Intent getIntent = getIntent();
         who = getIntent.getStringExtra("WHO");
         toWho = getIntent.getStringExtra("ToWho");
         //注册接收器
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("MsgBack");
+        intentFilter.addAction("AMSGCOME");
         registerReceiver(chatReceiver,intentFilter);
         Log.d("CHAT","chat注册广播接收器");
 
         beans = new LinkedList<Bean>();
-        String[] msg = new String[] { "你好！", "你也在金象工作吗？", "我在天安门扫大街呢，这里可舒服了！",
-                "原来你也细化这个工作啊，我这里还招人呢，你来不？来的话，我一句话的事儿！", "呵呵，你好！", "是的，你在哪里呢？",
-                "吼吼，这么便宜的事儿？！，我怎么没有遇到呢。", "恩，好啊 好啊。那等着我。。。" };
-        // 0 是I； 1 是you
-        for (int j = 0; j < msg.length; j++) {
-            beans.add(new Bean(msg[j],R.drawable.you,"", 1));
-        }
+        this.fillMsgList();
         setContentView(R.layout.activity_chat);
         initViewsMethod();
         onHandleMethod();
-
-        dbManager = new DBManager(this);
     }
 
     //处理listView的item方法
@@ -101,17 +107,18 @@ public class ChatActivity extends ActionBarActivity {
                 if (txt.equals("")){
                     Toast.makeText(getApplicationContext(), "发送内容不能为空 !", Toast.LENGTH_SHORT).show();
                 }else{
-                    Intent sendMsgIntent = new Intent();
-                    sendMsgIntent.setAction("SendMsg");
-                    sendMsgIntent.putExtra("who", who);
-                    sendMsgIntent.putExtra("toWho",toWho);
-                    sendMsgIntent.putExtra("Msg",txt);
-                    sendBroadcast(sendMsgIntent);
-                    adapter.addItemNotifiChange(new Bean(txt, R.drawable.me, new Date()+"", 0));
+
+                    String time = DateFomats.getCurrentTime(new Date().getTime());
+                    AppUtil app = (AppUtil)getApplication();
+                    SendMsg sendMsg = new SendMsg("MSG",app.getWriter());
+                    String str[] = new String[]{who,toWho,time,txt};
+                    sendMsg.setJSON(str);
+
+                    adapter.addItemNotifiChange(new Bean(txt, R.drawable.me, DateFomats.getCurrentTime(new Date().getTime()), 0));
                     edt.setText("");
                     listView.setSelection(beans.size() - 1);
 
-                    dbManager.addMsg(new Msg(who,toWho,"",txt));
+                    dbManager.addMsg(new Msg(who,toWho,DateFomats.getCurrentTime(new Date().getTime()),txt));
                 }
             }
         });
@@ -137,7 +144,43 @@ public class ChatActivity extends ActionBarActivity {
             Log.d("CHATRCV","chat广播接收器");
             intent.getStringExtra("who");
             String msg = intent.getStringExtra("what");
-            adapter.addItemNotifiChange(new Bean(msg, R.drawable.you, new Date()+"", 1));
+            String time = intent.getStringExtra("time");
+            adapter.addItemNotifiChange(new Bean(msg, R.drawable.you, time, 1));
+            listView.setSelection(beans.size() - 1);
+        }
+    }
+
+    private void fillMsgList() {
+        LinkedList<Msg> iSay = new LinkedList<>(dbManager.Query(who, toWho));
+        LinkedList<Msg> tSay = new LinkedList<>(dbManager.Query(toWho, who));
+        for (int i = 0; !iSay.isEmpty()&&!tSay.isEmpty() ; i++) {
+            if (iSay.getFirst().time.compareTo(tSay.getFirst().time) <= 0) {
+                String msg = iSay.getFirst().msg;
+                String time = iSay.getFirst().time;
+                Bean bean = new Bean(msg, R.drawable.me, time, 0);
+                beans.add(bean);
+                iSay.pop();
+            } else {
+                String msg = tSay.getFirst().msg;
+                String time = tSay.getFirst().time;
+                Bean bean = new Bean(msg, R.drawable.you, time, 1);
+                beans.add(bean);
+                tSay.pop();
+            }
+        }
+        while (!iSay.isEmpty()){
+            String msg = iSay.getFirst().msg;
+            String time = iSay.getFirst().time;
+            Bean bean = new Bean(msg, R.drawable.me, time, 0);
+            beans.add(bean);
+            iSay.pop();
+        }
+        while (!tSay.isEmpty()) {
+            String msg = tSay.getFirst().msg;
+            String time = tSay.getFirst().time;
+            Bean bean = new Bean(msg, R.drawable.you, time, 1);
+            beans.add(bean);
+            tSay.pop();
         }
     }
 
@@ -152,7 +195,6 @@ public class ChatActivity extends ActionBarActivity {
     protected void onDestroy() {
         unregisterReceiver(chatReceiver);
         super.onDestroy();
-
         dbManager.closeDB();
     }
 

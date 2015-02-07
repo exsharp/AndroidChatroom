@@ -92,7 +92,7 @@ public class CustomAdapter extends BaseAdapter {
         } else {
             s = (PeopleView) convertView.getTag();
         }
-        s.time.setText(DateFomats.getCurrentTime(new Date().getTime()));
+        s.time.setText(bean.getTime());
         s.message.setText(bean.gettMessage());
         s.portrait.setImageResource(R.drawable.you);
 

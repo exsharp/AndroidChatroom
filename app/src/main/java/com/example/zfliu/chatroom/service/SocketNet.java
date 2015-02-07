@@ -1,17 +1,13 @@
 package com.example.zfliu.chatroom.service;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.zfliu.chatroom.AppUtil;
-import com.example.zfliu.chatroom.R;
+import com.example.zfliu.chatroom.database.DBManager;
+import com.example.zfliu.chatroom.database.Msg;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +30,7 @@ public class SocketNet extends Service {
     private BufferedReader reader;
     private BufferedWriter writer;
 
-    private String host = "192.168.1.127";  //要连接的服务端IP地址
+    private String host = "172.18.8.7";  //要连接的服务端IP地址
     private int port = 3333;   //要连接的服务端对应的监听端口
 
     private void StartConnect () {
@@ -45,8 +41,8 @@ public class SocketNet extends Service {
                     client = new Socket(host,port);
                     writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
                     reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                    writer.write("helloworld");
-                    writer.flush();
+                    AppUtil app = (AppUtil)getApplication();
+                    app.setWriter(writer);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -84,7 +80,7 @@ public class SocketNet extends Service {
             e.printStackTrace();
         }
         this.loop();
-        this.iniBroadcastReceiver();
+        //this.iniBroadcastReceiver();
         Log.d("SOCKET","到了这里onCreate函数");
     }
 
@@ -92,7 +88,7 @@ public class SocketNet extends Service {
         SocketBroadcastReceiver socketBroadcastReceiver = new SocketBroadcastReceiver(writer);
         IntentFilter filter = new IntentFilter();
         filter.addAction("LOGIN");
-        filter.addAction("SendMsg");
+        filter.addAction("SENDMSG");
         registerReceiver(socketBroadcastReceiver, filter);
         Log.d("SOCKET","注册广播接收器");
     };
@@ -120,7 +116,6 @@ public class SocketNet extends Service {
         private String type;
         private JSONArray jsonArray;
         private JSONTokener json;
-        private Intent rtIntent;
 
         HandlerMsg (String str) throws JSONException {
             json =new JSONTokener(str);
@@ -136,7 +131,7 @@ public class SocketNet extends Service {
                 case "FRIENDGROUP":
                     friendGroupRcv(jsonArray);
                     break;
-                case "Msg":
+                case "MSG":
                     talkEach(jsonArray);
                     break;
                 default:
@@ -160,11 +155,16 @@ public class SocketNet extends Service {
         }
         private void talkEach(JSONArray ja) throws JSONException {
             Intent intent = new Intent();
-            intent.setAction("MsgBack");
-            intent.putExtra("who",ja.get(0).toString());
-            intent.putExtra("what", ja.get(1).toString());
+            intent.setAction("AMSGCOME");
+            intent.putExtra("who", ja.get(0).toString());
+            intent.putExtra("towho", ja.get(1).toString());
+            intent.putExtra("time",ja.get(2).toString());
+            intent.putExtra("what", ja.get(3).toString());
             sendBroadcast(intent);
-            Log.d("SOCKET","Socket发出广播");
+            DBManager dbManager = new DBManager(getApplicationContext());
+            dbManager.addMsg(new Msg(ja.get(0).toString(),ja.get(1).toString(),ja.get(2).toString(),ja.get(3).toString()));
+            dbManager.closeDB();
+            Log.d("SOCKET","Socket发出信息广播");
         }
     }
 }

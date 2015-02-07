@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -19,25 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.zfliu.chatroom.service.AppUtil;
+import com.example.zfliu.chatroom.service.SendMsg;
 import com.example.zfliu.chatroom.service.SocketNet;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.EntityEnclosingRequestWrapper;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
-import org.w3c.dom.Text;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LoginActivity extends ActionBarActivity {
 
@@ -102,13 +85,16 @@ public class LoginActivity extends ActionBarActivity {
             }
         }
         private void login(){
-            Intent loginIntent = new Intent();
-            loginIntent.setAction("LOGIN");
-            loginIntent.putExtra("username",username);
-            loginIntent.putExtra("password",password);
-            sendBroadcast(loginIntent);
+//            Intent loginIntent = new Intent();
+//            loginIntent.setAction("LOGIN");
+//            loginIntent.putExtra("username",username);
+//            loginIntent.putExtra("password",password);
+//            sendBroadcast(loginIntent);
             AppUtil app = (AppUtil)getApplication();
             app.setUser(username,password);
+            SendMsg sendMsg = new SendMsg("LOGIN",app.getWriter());
+            String str[] = new String[]{username, password};
+            sendMsg.setJSON(str);
         }
     }
 

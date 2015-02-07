@@ -1,4 +1,4 @@
-package com.example.zfliu.chatroom;
+package com.example.zfliu.chatroom.service;
 
 import android.app.Application;
 import android.util.Log;
@@ -8,6 +8,7 @@ import com.example.zfliu.chatroom.friendlist.Apple;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.BufferedWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,7 +19,7 @@ import java.util.LinkedList;
 public class AppUtil extends Application {
     private String userName = null;
     private String passWord = null;
-    private Socket socket = null;
+    private BufferedWriter writer;
     private LinkedList<String> group = new LinkedList<String>();
     private LinkedList<LinkedList<Apple>> child = new LinkedList<LinkedList<Apple>>();
 
@@ -29,12 +30,15 @@ public class AppUtil extends Application {
         userName = name;
         passWord = word;
     }
-    public Socket getSocket(){
-        return socket;
+
+    public void setWriter(BufferedWriter writer){
+        this.writer = writer;
     }
-    public void setSocket(Socket sck){
-        socket = sck;
+
+    public BufferedWriter getWriter(){
+        return writer;
     }
+
     public LinkedList<String> getGroup(){
         return group;
     }
@@ -50,7 +54,5 @@ public class AppUtil extends Application {
             temp.add(apple);
         }
         child.add(temp);
-        //Log.d("AppUtil","组名"+group.toString());
-        //Log.d("AppUtil",json.get(0).toString()+"有成员"+temp.toString());
     }
 }
