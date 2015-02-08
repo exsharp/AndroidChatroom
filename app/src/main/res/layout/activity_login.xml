@@ -102,6 +102,7 @@
             android:text="新用户注册"
             android:textColor="@color/daoqilan" />
         <Button
+            android:id="@+id/helpBT"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

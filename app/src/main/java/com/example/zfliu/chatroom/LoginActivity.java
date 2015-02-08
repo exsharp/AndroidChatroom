@@ -26,10 +26,9 @@ public class LoginActivity extends ActionBarActivity {
 
     private Button loginButton;
     private Button registerButton;
+    private Button helpButton;
     private String username;
     private String password;
-    private Handler handler;
-    private TextView textView;
     private Intent mIntent;
     private LoginReceive loginReceive;
     private ProgressDialog progressDialog = null;
@@ -56,16 +55,15 @@ public class LoginActivity extends ActionBarActivity {
 
         loginButton = (Button)findViewById(R.id.loginBT);
         registerButton = (Button)findViewById(R.id.registerBT);
+        helpButton = (Button) findViewById(R.id.helpBT);
 
         loginButton.setOnClickListener(new ButtonListener());
         registerButton.setOnClickListener(new ButtonListener());
+        helpButton.setOnClickListener(new ButtonListener());
     }
     class ButtonListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-//            textView = (TextView)findViewById(R.id.showTV);
-//            Intent intent = new Intent(LoginActivity.this,FragmentActivity.class);
-//            startActivity(intent);
             switch (v.getId()){
                 case R.id.loginBT:
                     progressDialog = ProgressDialog.show(LoginActivity.this, "登陆中", "正在登陆,请稍候！");
@@ -79,21 +77,21 @@ public class LoginActivity extends ActionBarActivity {
                     Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
                     startActivity(intent);
                     break;
+                case R.id.helpBT:
+                    Intent tintent = new Intent(LoginActivity.this,HelpActivity.class);
+                    startActivity(tintent);
+                    break;
                 default:
                     System.out.println("未知错误");
                     break;
             }
         }
         private void login(){
-//            Intent loginIntent = new Intent();
-//            loginIntent.setAction("LOGIN");
-//            loginIntent.putExtra("username",username);
-//            loginIntent.putExtra("password",password);
-//            sendBroadcast(loginIntent);
             AppUtil app = (AppUtil)getApplication();
             app.setUser(username,password);
             SendMsg sendMsg = new SendMsg("LOGIN",app.getWriter());
             String str[] = new String[]{username, password};
+            //String str[] = new String[]{"aaa","111"};
             sendMsg.setJSON(str);
         }
     }

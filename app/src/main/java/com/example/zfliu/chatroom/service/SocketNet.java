@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.example.zfliu.chatroom.database.DBManager;
 import com.example.zfliu.chatroom.database.Msg;
+import com.example.zfliu.chatroom.files.FListFile;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,7 +32,7 @@ public class SocketNet extends Service {
     private BufferedReader reader;
     private BufferedWriter writer;
 
-    private String host = "172.18.8.7";  //要连接的服务端IP地址
+    private String host = "192.168.155.3";  //要连接的服务端IP地址
     private int port = 3333;   //要连接的服务端对应的监听端口
 
     private void StartConnect () {
@@ -59,9 +60,7 @@ public class SocketNet extends Service {
                     for (;;){
                         String temp;
                         while ((temp=reader.readLine())!=null){
-                            Log.d("SOCKET",temp);
-//                            HandlerMsg handler = new HandlerMsg(temp);
-//                            handler.handler();
+                            Log.d("SOCKET", "服务器发来" + temp);
                             passStr(temp);
                         }
                         System.out.println("一次循环结束");
@@ -98,70 +97,13 @@ public class SocketNet extends Service {
         super.onDestroy();
     }
 
-    private void passStr(String str) throws JSONException {
+    private void passStr(String str) throws JSONException, IOException {
         MsgHandler msgHandler = new MsgHandler(str,this);
         msgHandler.judgeType();
     }
 
-    //这里处理从服务器接收回来的东西
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    private class HandlerMsg {
-        private String type;
-        private JSONArray jsonArray;
-        private JSONTokener json;
-
-        HandlerMsg (String str) throws JSONException {
-            json =new JSONTokener(str);
-            JSONObject info = (JSONObject) json.nextValue();
-            type = info.getString("TYPE");
-            jsonArray = info.getJSONArray("CONTENT");
-        }
-        public void handler() throws JSONException {
-            switch (type){
-                case "VERIFY":
-                    verify(jsonArray);
-                    break;
-                case "FRIENDGROUP":
-                    friendGroupRcv(jsonArray);
-                    break;
-                case "MSG":
-                    talkEach(jsonArray);
-                    break;
-                default:
-            }
-        }
-        private void verify(JSONArray ja) throws JSONException {
-            Intent intent = new Intent();
-            intent.setAction("VERIFY");
-            if (ja.get(0).equals("SUCCESS")){
-                intent.putExtra("RESULT","SUCCESS");
-            } else {
-                intent.putExtra("RESULT","FAIL");
-                intent.putExtra("WHY",ja.get(1).toString());
-            }
-            sendBroadcast(intent);
-            Log.d("SOCKET","Socket发出广播");
-        }
-        private void friendGroupRcv(JSONArray ja) throws JSONException{
-            AppUtil app = (AppUtil)getApplication();
-            app.setFriendList(ja);
-        }
-        private void talkEach(JSONArray ja) throws JSONException {
-            Intent intent = new Intent();
-            intent.setAction("AMSGCOME");
-            intent.putExtra("who", ja.get(0).toString());
-            intent.putExtra("towho", ja.get(1).toString());
-            intent.putExtra("time",ja.get(2).toString());
-            intent.putExtra("what", ja.get(3).toString());
-            sendBroadcast(intent);
-            DBManager dbManager = new DBManager(getApplicationContext());
-            dbManager.addMsg(new Msg(ja.get(0).toString(),ja.get(1).toString(),ja.get(2).toString(),ja.get(3).toString()));
-            dbManager.closeDB();
-            Log.d("SOCKET","Socket发出信息广播");
-        }
     }
 }

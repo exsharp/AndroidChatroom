@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.zfliu.chatroom.service.AppUtil;
+
 /**
  * Created by zfliu on 2/7/2015.
  */
@@ -11,6 +13,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "chatmsg.db";
     private static final int DATABASE_VERSION = 1;
+    private String tableName="";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

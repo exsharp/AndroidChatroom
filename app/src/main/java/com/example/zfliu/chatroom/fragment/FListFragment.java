@@ -9,12 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.example.zfliu.chatroom.files.FListFile;
 import com.example.zfliu.chatroom.service.AppUtil;
 import com.example.zfliu.chatroom.ChatActivity;
 import com.example.zfliu.chatroom.R;
 import com.example.zfliu.chatroom.friendlist.Apple;
 import com.example.zfliu.chatroom.friendlist.ExpandableAdapter;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 /**
@@ -35,8 +37,15 @@ public class FListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         AppUtil app = (AppUtil)getActivity().getApplication();
-        groups = app.getGroup();
-        children = app.getChild();
+        FListFile fListFile = new FListFile(getActivity());
+        //groups = app.getGroup();
+        try {
+            groups = fListFile.getGroup();
+            children = fListFile.getChild();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //children = app.getChild();
         userName = app.getUserName();
 
     }

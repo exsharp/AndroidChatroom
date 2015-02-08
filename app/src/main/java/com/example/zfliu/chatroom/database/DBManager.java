@@ -36,8 +36,8 @@ public class DBManager {
     public List<Msg> Query(String who,String withwho){
         ArrayList<Msg> msgs = new ArrayList<>();
         Cursor c = queryTheCursor(who,withwho);
+        Log.d("DBMANAGER", "DBMGR提取数据数据");
         while(c.moveToNext()){
-            Log.d("DBMANAGER", "DBMGR提取数据数据");
             Msg msg = new Msg();
             msg.user = c.getString(c.getColumnIndex("user"));
             msg.towho = c.getString(c.getColumnIndex("towho"));

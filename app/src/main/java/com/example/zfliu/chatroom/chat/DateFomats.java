@@ -19,7 +19,7 @@ public class DateFomats {
 
     /** 获取并格式化当前时间值  */
     public static String getCurrentTime(long date){
-        SimpleDateFormat sd = new SimpleDateFormat("MM-dd"+"\t"+"HH:"+"mm");
+        SimpleDateFormat sd = new SimpleDateFormat("MM-dd"+"\t"+"HH:"+"mm:"+"ss");
         return sd.format(date);
     }
 }

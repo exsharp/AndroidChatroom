@@ -1,5 +1,6 @@
 package com.example.zfliu.chatroom;
 
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +32,7 @@ import com.example.zfliu.chatroom.service.SendMsg;
 
 public class ChatActivity extends ActionBarActivity {
 
-    private DBManager dbManager;
+    private Context context = this;
 
     private LinkedList<Bean> beans = null;
     /** 聊天message 格式 */
@@ -43,13 +44,23 @@ public class ChatActivity extends ActionBarActivity {
     private CustomAdapter adapter;
     private String toWho;
     private String who;
+    private AppUtil app;
     private ChatReceiver chatReceiver = new ChatReceiver();
 
     @Override
     protected void onPause() {
         super.onPause();
+        app.setCurrentActivity("");
+        app.setChatWithWho("");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         beans = new LinkedList<Bean>();
         this.fillMsgList();
+        app.setCurrentActivity("chat");
+        app.setChatWithWho(toWho);
     }
 
     @Override
@@ -57,12 +68,14 @@ public class ChatActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        //获取数据库管理
-        dbManager = new DBManager(this);
+
+        app = (AppUtil)getApplication();
         //获得正在两天的两个人信息
         Intent getIntent = getIntent();
         who = getIntent.getStringExtra("WHO");
         toWho = getIntent.getStringExtra("ToWho");
+
+
         //注册接收器
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("AMSGCOME");
@@ -83,15 +96,15 @@ public class ChatActivity extends ActionBarActivity {
         btnEnter = (Button)findViewById(R.id.enter);
 
         listView.setOnCreateContextMenuListener(
-                new View.OnCreateContextMenuListener() {
-                    @Override
-                    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                        menu.setHeaderTitle("提示：");
-                        menu.setHeaderIcon(android.R.drawable.stat_notify_error);
-                        menu.add(0,0,1,"删除");
-                        menu.add(1,1,0,"取消");
-                    }
+            new View.OnCreateContextMenuListener() {
+                @Override
+                public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                    menu.setHeaderTitle("提示：");
+                    menu.setHeaderIcon(android.R.drawable.stat_notify_error);
+                    menu.add(0,0,1,"删除");
+                    menu.add(1,1,0,"取消");
                 }
+            }
         );
 
     }
@@ -109,16 +122,13 @@ public class ChatActivity extends ActionBarActivity {
                 }else{
 
                     String time = DateFomats.getCurrentTime(new Date().getTime());
-                    AppUtil app = (AppUtil)getApplication();
-                    SendMsg sendMsg = new SendMsg("MSG",app.getWriter());
+                    SendMsg sendMsg = new SendMsg("MSG",context);
                     String str[] = new String[]{who,toWho,time,txt};
                     sendMsg.setJSON(str);
 
                     adapter.addItemNotifiChange(new Bean(txt, R.drawable.me, DateFomats.getCurrentTime(new Date().getTime()), 0));
                     edt.setText("");
                     listView.setSelection(beans.size() - 1);
-
-                    dbManager.addMsg(new Msg(who,toWho,DateFomats.getCurrentTime(new Date().getTime()),txt));
                 }
             }
         });
@@ -151,8 +161,10 @@ public class ChatActivity extends ActionBarActivity {
     }
 
     private void fillMsgList() {
+        DBManager dbManager = new DBManager(this);
         LinkedList<Msg> iSay = new LinkedList<>(dbManager.Query(who, toWho));
         LinkedList<Msg> tSay = new LinkedList<>(dbManager.Query(toWho, who));
+        dbManager.closeDB();
         while(!iSay.isEmpty()&&!tSay.isEmpty()) {
             if (iSay.getFirst().time.compareTo(tSay.getFirst().time) <= 0) {
                 String msg = iSay.getFirst().msg;
@@ -188,7 +200,6 @@ public class ChatActivity extends ActionBarActivity {
     protected void onDestroy() {
         unregisterReceiver(chatReceiver);
         super.onDestroy();
-        dbManager.closeDB();
     }
 
 

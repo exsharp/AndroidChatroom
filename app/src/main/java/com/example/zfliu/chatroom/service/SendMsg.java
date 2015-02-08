@@ -1,5 +1,7 @@
 package com.example.zfliu.chatroom.service;
 
+import android.content.Context;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +20,12 @@ public class SendMsg {
     private JSONObject jsonObject = new JSONObject();
     private JSONArray jsonArray = new JSONArray();
     private String jsonString = "";
+
+    public SendMsg(String type,Context context){
+        this.type = type;
+        AppUtil app = (AppUtil)context.getApplicationContext();
+        this.writer = app.getWriter();
+    }
 
     public SendMsg(String type,BufferedWriter writer){
         this.type = type;
@@ -60,5 +68,9 @@ public class SendMsg {
                 }
             }
         }).start();
+    }
+
+    public void reLogin(){
+
     }
 }

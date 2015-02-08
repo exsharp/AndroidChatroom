@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ImageView
+        android:id="@+id/imageIV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher"/>
+
+    <Button
+        android:id="@+id/sendNotiBt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="这是一个普通的按钮"/>
+
+    <TextView
+        android:id="@+id/aaaaTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="什么都没有"
+        android:textSize="50sp"/>
+
+
+</LinearLayout>
