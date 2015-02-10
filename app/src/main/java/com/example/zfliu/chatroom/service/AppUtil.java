@@ -22,8 +22,6 @@ public class AppUtil extends Application {
     private String currentActivity = "";
     private String chatWithWho = "";
     private BufferedWriter writer;
-    private LinkedList<String> group = new LinkedList<String>();
-    private LinkedList<LinkedList<Apple>> child = new LinkedList<LinkedList<Apple>>();
 
     public String getUserName(){
         return userName;
@@ -55,25 +53,5 @@ public class AppUtil extends Application {
 
     public BufferedWriter getWriter(){
         return writer;
-    }
-
-    public LinkedList<String> getGroup(){
-        return group;
-    }
-
-    public LinkedList<LinkedList<Apple>> getChild(){
-        return child;
-    }
-
-
-    public void setFriendList(JSONArray json) throws JSONException {
-        group.add(json.get(0).toString());
-        LinkedList<Apple> temp = new LinkedList<Apple>();
-        Apple apple;
-        for (int i = 1 ;i<json.length();i++){
-            apple= new Apple(json.get(i).toString(),0);
-            temp.add(apple);
-        }
-        child.add(temp);
     }
 }

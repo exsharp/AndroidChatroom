@@ -70,10 +70,11 @@ public class ChatActivity extends ActionBarActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         app = (AppUtil)getApplication();
+
         //获得正在两天的两个人信息
         Intent getIntent = getIntent();
-        who = getIntent.getStringExtra("WHO");
-        toWho = getIntent.getStringExtra("ToWho");
+        who = app.getUserName();
+        toWho = getIntent.getStringExtra("towho");
 
 
         //注册接收器
@@ -111,7 +112,7 @@ public class ChatActivity extends ActionBarActivity {
 
     //处理发送消息的方法
     public void onHandleMethod(){
-        adapter = new CustomAdapter(this,beans);
+        adapter = new CustomAdapter(context,beans);
         listView.setAdapter(adapter);
         btnEnter.setOnClickListener(new View.OnClickListener() {
             @Override

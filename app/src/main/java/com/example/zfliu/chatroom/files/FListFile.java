@@ -3,26 +3,21 @@ package com.example.zfliu.chatroom.files;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.zfliu.chatroom.chat.Bean;
-import com.example.zfliu.chatroom.fragment.FListFragment;
 import com.example.zfliu.chatroom.friendlist.Apple;
 import com.example.zfliu.chatroom.service.AppUtil;
 
-import org.apache.http.util.EncodingUtils;
 import org.json.JSONArray;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -59,6 +54,7 @@ public class FListFile {
             e.printStackTrace();
         }
     }
+
     public LinkedList<String> getGroup() throws IOException {
         LinkedList<String> group = new LinkedList<>();
         FileInputStream fin = context.openFileInput(fileName);
@@ -100,9 +96,23 @@ public class FListFile {
         return child;
     }
 
-    private LinkedList<Apple> fuck(LinkedList<Apple> temp){
-        LinkedList<Apple> LL = new LinkedList<Apple>(temp);
-        return LL;
+    public String[] getGroupArray() throws IOException {
+        LinkedList<String> sour = getGroup();
+        String[] group = new String[sour.size()];
+        for (int i = 0 ; i<sour.size();i++){
+            group[i] = sour.get(i).toString();
+        }
+        return group;
     }
 
+    public void clean() throws IOException {
+//        FileOutputStream login = context.openFileOutput(fileName,context.MODE_PRIVATE);
+//        BufferedOutputStream buffered = new BufferedOutputStream(login);
+//        buffered.close();
+//        File f=new File(context.getFilesDir(), fileName);
+//        f.delete();
+        boolean aaa;
+        aaa=context.deleteFile(fileName);
+        System.out.print("FListFile:aaaaaaaaaa"+aaa);
+    }
 }

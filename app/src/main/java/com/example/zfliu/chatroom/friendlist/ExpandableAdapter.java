@@ -32,8 +32,6 @@ public class ExpandableAdapter extends BaseExpandableListAdapter {
         mInflater = LayoutInflater.from(context);
     }
 
-
-    //重写ExpandableListAdapter中的各个方法
     @Override
     public int getGroupCount() {
         // TODO Auto-generated method stub

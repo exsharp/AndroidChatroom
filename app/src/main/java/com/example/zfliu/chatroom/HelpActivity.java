@@ -7,55 +7,68 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.internal.widget.AdapterViewCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RemoteViews;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 
 public class HelpActivity extends ActionBarActivity {
 
-    private Button sendNotiBt;
-    private TextView aaaaTV;
+    private TextView result = null;
+    private Spinner spinner = null;
+    private ArrayAdapter<String> adapter = null;
+    private static final String [] langurage ={"机器语言","汇编","c语言","c++语言","java语言"};
 
-
-    /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_help);
-        sendNotiBt = (Button) findViewById(R.id.sendNotiBt);
-        aaaaTV = (TextView) findViewById(R.id.aaaaTV);
-        sendNotiBt.setOnClickListener(new View.OnClickListener() {
+
+        result = (TextView)findViewById(R.id.result);
+        spinner = (Spinner)findViewById(R.id.spinner);
+
+        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,langurage);
+        //设置下拉列表风格
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //将适配器添加到spinner中去
+
+        spinner.setAdapter(adapter);
+        spinner.setVisibility(View.VISIBLE);//设置默认显示
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+
             @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                result.setText("你的选择是："+((TextView)view).getText());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_help, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

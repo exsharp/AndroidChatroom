@@ -32,7 +32,7 @@ public class SocketNet extends Service {
     private BufferedReader reader;
     private BufferedWriter writer;
 
-    private String host = "192.168.155.3";  //要连接的服务端IP地址
+    private String host = "192.168.1.110";  //要连接的服务端IP地址
     private int port = 3333;   //要连接的服务端对应的监听端口
 
     private void StartConnect () {
@@ -47,6 +47,7 @@ public class SocketNet extends Service {
                     app.setWriter(writer);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    stopSelf();
                 }
             }
         }).start();
