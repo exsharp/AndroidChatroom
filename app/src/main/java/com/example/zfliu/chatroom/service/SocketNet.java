@@ -1,24 +1,18 @@
 package com.example.zfliu.chatroom.service;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.example.zfliu.chatroom.database.DBManager;
-import com.example.zfliu.chatroom.database.Msg;
-import com.example.zfliu.chatroom.files.FListFile;
-
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -32,7 +26,7 @@ public class SocketNet extends Service {
     private BufferedReader reader;
     private BufferedWriter writer;
 
-    private String host = "192.168.1.110";  //要连接的服务端IP地址
+    private String host = "172.22.71.95";  //要连接的服务端IP地址
     private int port = 3333;   //要连接的服务端对应的监听端口
 
     private void StartConnect () {
@@ -43,7 +37,8 @@ public class SocketNet extends Service {
                     client = new Socket(host,port);
                     writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
                     reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                    AppUtil app = (AppUtil)getApplication();
+                    //DataInputStream dp = new DataInputStream(client.getInputStream());
+                    AppUtil app = (AppUtil)getApplication();    
                     app.setWriter(writer);
                 } catch (Exception e) {
                     e.printStackTrace();

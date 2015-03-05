@@ -106,11 +106,6 @@ public class FListFile {
     }
 
     public void clean() throws IOException {
-//        FileOutputStream login = context.openFileOutput(fileName,context.MODE_PRIVATE);
-//        BufferedOutputStream buffered = new BufferedOutputStream(login);
-//        buffered.close();
-//        File f=new File(context.getFilesDir(), fileName);
-//        f.delete();
         boolean aaa;
         aaa=context.deleteFile(fileName);
         System.out.print("FListFile:aaaaaaaaaa"+aaa);

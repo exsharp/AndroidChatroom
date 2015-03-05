@@ -90,9 +90,9 @@ public class LoginActivity extends ActionBarActivity {
             AppUtil app = (AppUtil)getApplication();
             SendMsg sendMsg = new SendMsg("LOGIN",app.getWriter());
             app.setUser(username,password);
-            //String str[] = new String[]{username, password};
-            String str[] = new String[]{"aaa","111"};
-            app.setUser("aaa","111");
+            String str[] = new String[]{username, password};
+            //String str[] = new String[]{"aaa","111"};
+            //app.setUser("aaa","111");
             sendMsg.setJSON(str);
         }
     }
